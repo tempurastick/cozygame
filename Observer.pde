@@ -3,6 +3,7 @@ interface Observer {
   void updateActionCount(Observer observer, int actionCount);
   void updateGrowthStatus(Observer observer, int growthStatus);
   void updateCropSelection(Observer observer, int cropSelection);
+  void updateNotifyPoints(Observer observer, int points);
 }
 
 class InteractionHandler implements Observer {
@@ -22,5 +23,8 @@ class InteractionHandler implements Observer {
   }
 
   void updateCropSelection(Observer observer, int cropSelection) {
+  }
+
+  void updateNotifyPoints(Observer observer, int points) {
   }
 }

@@ -1,5 +1,6 @@
 class Crops implements Observer {
 
+  PImage seed;
   PImage seedling;
   PImage youngAdult;
   PImage adult;
@@ -13,6 +14,7 @@ class Crops implements Observer {
 
   // state machine for crops
   int GROWSTATUS;
+  int SEED = 0;
   int YOUNG = 1;
   int YOUNGADULT = 2;
   int ADULT = 3;
@@ -24,7 +26,7 @@ class Crops implements Observer {
   int cropPoints;
 
   // water level
-  int hydrationLevel = 10;
+  int hydrationLevel;
 
   // reference for steps
   int previousActionCount = 0;
@@ -36,18 +38,20 @@ class Crops implements Observer {
     this.cropX = cropX;
     this.cropY = cropY;
     growThreshold = 10;
-    //this.hydrationLevel = hydrationLevel;
-    //this.lifeCycle = lifeCycle;
     cropW = 50;
     cropH = 50;
+    hydrationLevel = 10;
+
+    cropPoints = 10;
+    seed = loadImage("images/seeds.png");
     seedling = loadImage("images/seedling.png");
+    // fallback
     youngAdult = loadImage("images/youngadult.png");
     adult = loadImage("images/adult.png");
     dead = loadImage("images/dead.png");
   }
 
   int getHydration() {
-    println(hydrationLevel);
     return hydrationLevel;
   }
 
@@ -73,6 +77,9 @@ class Crops implements Observer {
     // Implement how Crops respond to updates from observers (if needed)
   }
 
+  void updateNotifyPoints(Observer observer, int points) {
+  }
+
   void updateCropSelection(Observer observer, int cropSelection) {
   }
 
@@ -81,8 +88,6 @@ class Crops implements Observer {
       if (observer instanceof Crops) {
         Crops crop = (Crops) observer;
         crop.hydrationLevel--;
-
-        //println( "action count: " + actionCount + "hydration now:" + crop.hydrationLevel + "life cycle: " + crop.lifeCycle);
       }
       lifeCycle++;
       previousActionCount = actionCount;
@@ -95,16 +100,18 @@ class Crops implements Observer {
       crop.checkGrowthStatus();
     }
   }
-  
+
   void growCrops() {
     imageMode(CENTER);
-
     if ( hydrationLevel > 1 ) {
-      if ( lifeCycle >= 1 && lifeCycle <= growThreshold/2 ) {
+      // seeds have the same parameter
+      if (lifeCycle >= 1 && lifeCycle <= 2 ) {
+        image(seed, cropX, cropY);
+        GROWSTATUS = SEED;
+      } else if ( lifeCycle >= 2 && lifeCycle <= (growThreshold/2) ) {
         image(seedling, cropX, cropY);
         GROWSTATUS = YOUNG;
-        // put the thresholds in variables so they can be changed for subclasses
-      } else if ( lifeCycle >= 5 && lifeCycle <= growThreshold  ) {
+      } else if ( lifeCycle >= 5 && lifeCycle <= growThreshold ) {
         image(youngAdult, cropX, cropY);
         GROWSTATUS = YOUNGADULT;
       } else if ( lifeCycle >= growThreshold+1 ) {
@@ -120,10 +127,6 @@ class Crops implements Observer {
   }
 
   void draw() {
-    //noStroke();
-
-    // fix cause currently it's not working with the camera mode
     growCrops();
-    //println("working?" + cropX, cropY, cropW, cropH);
   }
 }

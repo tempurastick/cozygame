@@ -1,14 +1,23 @@
 class UI implements Observer {
   PImage menubar;
 
+  Crops crops;
+
+  // tools
   PImage seedCarrot;
   PImage seedPumpkin;
   PImage seedTomato;
+  PImage seedKohl;
+  PImage seedChoy;
+  PImage seedEggplant;
+  PImage watercan;
+  PImage seedling;
+
   int fontSize = 16;
   color textColour = #272736;
-  float seedPosX = 72;
-  float seedPosY = 182;
-  
+  float seedPosX = 65;
+  float seedPosY = 189;
+
 
 
   void setup() {
@@ -16,6 +25,13 @@ class UI implements Observer {
     seedCarrot = loadImage("images/carrot.png");
     seedPumpkin = loadImage("images/adult.png");
     seedTomato = loadImage("images/tomato.png");
+    seedKohl = loadImage("images/kohl.png");
+    seedChoy = loadImage("images/bokchoy.png");
+    seedEggplant = loadImage("images/eggplant.png");
+    watercan = loadImage("images/watercan.png");
+    seedling = loadImage("images/seeds.png");
+
+    registerObserver(observerSubject);
   }
 
   void draw() {
@@ -23,25 +39,23 @@ class UI implements Observer {
     fill(textColour);
     textSize(fontSize);
     image(menubar, 0, 0);
-    //actionStepDisplay();
-    pointsDisplay();
+    updateNotifyPoints(interactionHandler, player.pointsAdded);
+
     updateActionCount( interactionHandler, player.actionCount);
-    toolsDisplay();
+
     movementsDisplay();
     noFill();
     updateCropSelection(interactionHandler, player.CROPSELECTION);
-  }
-
-
-  void pointsDisplay() {
-    // harvest points
-    pixelFont.draw("100", 45, 77);
+    toolsDisplay();
   }
 
   void toolsDisplay() {
     // key instruction for plant seeds
     pixelFont.draw("X", width-90, 164);
+    // watering
+    image(watercan, width-90, 234);
     pixelFont.draw("H", width-90, 234);
+    // harvesting
     pixelFont.draw("Q", width-90, 304);
   }
 
@@ -52,14 +66,18 @@ class UI implements Observer {
     pixelFont.draw("D", 60, height-40);
   }
 
-  void update(Object data) {
-    //println(data + "working");
+  void registerObserver( ObserverSubject observerSubject) {
+    observerSubject.addObserver(this);
+  }
 
-    // so basically keep intersections in here
+  void update(Object data) {
   }
 
   void updateCropSelection(Observer observer, int cropSelection) {
     imageMode(CENTER);
+
+    // seed always displayed
+    image(seedling, width-seedPosX, seedPosY);
     switch(cropSelection) {
     case 0:
       // TODO: change to pumpkin once exists
@@ -70,6 +88,15 @@ class UI implements Observer {
       break;
     case 2:
       image(seedCarrot, width-seedPosX, seedPosY, seedCarrot.width/2, seedCarrot.height/2);
+      break;
+    case 3:
+      image(seedKohl, width-seedPosX, seedPosY, seedCarrot.width/2, seedCarrot.height/2);
+      break;
+    case 4:
+      image(seedChoy, width-seedPosX, seedPosY, seedCarrot.width/2, seedCarrot.height/2);
+      break;
+    case 5:
+      image(seedEggplant, width-seedPosX, seedPosY, seedCarrot.width/2, seedCarrot.height/2);
       break;
     }
     imageMode(CORNER);
@@ -83,6 +110,11 @@ class UI implements Observer {
   }
 
   void updateGrowthStatus(Observer observer, int growthStatus) {
-    println(growthStatus + "growthStatus Count");
+  }
+
+  void updateNotifyPoints(Observer observer, int points) {
+    points += points;
+    String pointsStr = str(points);
+    pixelFont.draw(pointsStr, 45, 77);
   }
 }

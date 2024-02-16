@@ -44,6 +44,7 @@ class Player {
 
   int actionCount = 0;
   int growthCeck;
+  int pointsAdded;
 
   // The player is a circle and this is its radius
   float playerR = 10;
@@ -58,7 +59,9 @@ class Player {
   int PUMPKIN = 0;
   int TOMATO = 1;
   int CARROT = 2;
-
+  int KOHL = 3;
+  int BOKCHOY = 4;
+  int EGGPLANT = 5;
 
   // invoke without adjusted parameters
   Player() {
@@ -81,10 +84,14 @@ class Player {
   }
 
   void setCropList() {
+    // create list of all crops so we can iterate through it
     cropSelection = new IntList();
     cropSelection.append(PUMPKIN);
     cropSelection.append(TOMATO);
     cropSelection.append(CARROT);
+    cropSelection.append(KOHL);
+    cropSelection.append(BOKCHOY);
+    cropSelection.append(EGGPLANT);
   }
 
   void setPlayerPos(float setVX, float setVY) {
@@ -159,13 +166,14 @@ class Player {
 
   void drawPlayer() {
     // draw player
-    //noStroke();
-    //fill(0, 255, 255);
-    //ellipseMode(CENTER);
-    //ellipse( playerX - screenLeftX, playerY - screenTopY, 2*playerR, 2*playerR );
+    noStroke();
+    fill(#2E2A2A, 122);
+    ellipseMode(CENTER);
     imageMode(CENTER);
+        ellipse( playerX , playerY+20, 2*playerR+10, playerR );
     image(playerImgs.get(playerPhase), playerX, playerY);
-        imageMode(CORNER);
+ 
+    imageMode(CORNER);
   }
 
   void keyPressed() {
@@ -198,10 +206,10 @@ class Player {
         nextX = nextX + playerSpeed;
       }
     } else {
-      // allow actions 
+      // allow actions
       actions();
     }
-        
+
     //animation
     if ((key == 'w' || key == 'W' || key == 's' || key == 'S' || key == 'a' || key == 'A' || key == 'd' || key == 'D') && !isMoving) {
       isMoving = true;
@@ -253,14 +261,11 @@ class Player {
         checkForCrops(tilled);
         map.set (tilled.x, tilled.y, 'M');
         actionCount++;
-      } else if ((key == 'q' || key == 'Q') ) {
-        println("pressing q!" + "tilled or tilledWater" + tilled + tilledWatered);
+      } else if ((key == 'q' || key == 'Q')) {
         if ( tilled != null ) {
           checkForCrops(tilled);
-          actionCount++;
         } else if ( tilledWatered != null ) {
           checkForCrops(tilledWatered);
-          actionCount++;
         }
       }
 
@@ -325,7 +330,7 @@ class Player {
     switch(CROPSELECTION) {
     case 0:
       // TODO: change to pumpkin once exists
-      cropList.add(new Crops(map.centerXOfTile(soil.x), map.centerYOfTile(soil.y)));
+      cropList.add(new Pumpkin(map.centerXOfTile(soil.x), map.centerYOfTile(soil.y)));
       break;
     case 1:
       cropList.add(new Tomato(map.centerXOfTile(soil.x), map.centerYOfTile(soil.y)));
@@ -333,7 +338,18 @@ class Player {
     case 2:
       cropList.add(new Carrot(map.centerXOfTile(soil.x), map.centerYOfTile(soil.y)));
       break;
+    case 3:
+      cropList.add(new Kohl(map.centerXOfTile(soil.x), map.centerYOfTile(soil.y)));
+      break;
+    case 4:
+      cropList.add(new Bokchoy(map.centerXOfTile(soil.x), map.centerYOfTile(soil.y)));
+      break;
+    case 5:
+      cropList.add(new Eggplant(map.centerXOfTile(soil.x), map.centerYOfTile(soil.y)));
+      break;
     }
+
+    observerSubject.notifyObservers(cropList);
   }
 
 
@@ -346,7 +362,6 @@ class Player {
       int growthStatus = crop.checkGrowthStatus();
 
       // Check if in crop
-      println("distance" +  (distance < playerR + crop.cropW/2));
       if (distance < playerR + crop.cropW/2) {
         switch(growthStatus) {
         case 4:
@@ -354,33 +369,29 @@ class Player {
           cropList.remove(crop);
           // reset field
           map.set (tile.x, tile.y, 'D');
+          actionCount++;
           println("removed" + tile.x + tile.y );
           break;
         case 3:
           // harvest
-          //cropsToRemove.add(crop);
           cropList.remove(crop);
 
           // reset field
           map.set (tile.x, tile.y, 'D');
           println("harvested!" + tile.x + tile.y );
+          actionCount++;
+          // add to player point count
+          pointsAdded += crop.cropPoints;
+          observerSubject.notifyPoints(player.pointsAdded);
           break;
         default:
           // hydrate
-          // water crop
           crop.hydrate();
-          println("hydrated!");
           break;
         }
 
         return; // Exit the loop if a crop is found
       }
     }
-
-    println("removed all");
-  }
-
-  void update(Object observer) {
-    println(observer + "working");
   }
 }

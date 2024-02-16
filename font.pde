@@ -4,6 +4,7 @@ class Font {
   int lineHeight;
   int base;
   int charCount;
+  float spacing = 16;
 
   Font() {
     fontSheet = loadImage("WhitePeaberryOutline.png");
@@ -15,15 +16,19 @@ class Font {
     for (int i = 0; i < text.length(); i++) {
       char letter = text.charAt(i);
 
-// otherwise lowercase would register as empty
-      if (Character.isLowerCase(letter)) {
-        letter = Character.toUpperCase(letter);
-      }
-      // - ASCI
-      int index = letter -32;
-      if (index >= 0 && index < characters.length && characters[index] != null) {
-        image(characters[index], x, y);
-        x += characters[index].width-9; // Add some spacing between characters
+      if (letter == ' ') { // Handle space character separately
+        x += spacing; // Add spacing for the space character
+      } else {
+        // otherwise lowercase would register as empty
+        if (Character.isLowerCase(letter)) {
+          letter = Character.toUpperCase(letter);
+        }
+        // - ASCI
+        int index = letter -32;
+        if (index >= 0 && index < characters.length && characters[index] != null) {
+          image(characters[index], x, y);
+          x += characters[index].width-9; // Add some spacing between characters
+        }
       }
     }
   }

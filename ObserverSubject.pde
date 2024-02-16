@@ -50,4 +50,10 @@ class ObserverSubject {
       observer.updateCropSelection(observer, cropSelection);
     }
   }
+
+  void notifyPoints( int points ) {
+    for (Observer observer : this.watchList ) {
+      observer.updateNotifyPoints(observer, points);
+    }
+  }
 }
