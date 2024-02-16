@@ -1,4 +1,8 @@
+import processing.sound.*;
+SoundFile song;
+
 Map map;
+
 GameScreens gameScreen;
 
 Player player;
@@ -16,8 +20,6 @@ boolean showSpecialFunctions=false;
 // used for scrolling
 float screenLeftX, screenTopY;
 
-PImage backgroundImg;
-
 Map.TileReference soil;
 
 InteractionHandler interactionHandler = new InteractionHandler();
@@ -28,15 +30,13 @@ void setup() {
   size( 640, 480 );
   pixelFont = new Font();
   frameRate(30);
-  backgroundImg = loadImage ("images/fire.jpg");
   ui = new UI();
   ui.setup();
+  song = new SoundFile(this, "mushrooms.mp3");
+  song.loop();
 
   observerSubject.addObserver(interactionHandler);
   gameScreen.newGame();
-}
-
-void update() {
 }
 
 void draw() {
@@ -50,6 +50,8 @@ void draw() {
     gameScreen.gameWonScreen();
   } else if (gameScreen.gameState == gameScreen.GAMERESTART) {
     gameScreen.resetState();
+  } else if (gameScreen.gameState == gameScreen.GAMEHELP) {
+    gameScreen.helpScreen();
   }
 }
 

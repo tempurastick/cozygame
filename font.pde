@@ -4,7 +4,7 @@ class Font {
   int lineHeight;
   int base;
   int charCount;
-  float spacing = 16;
+  float spacing = 8;
 
   Font() {
     fontSheet = loadImage("WhitePeaberryOutline.png");

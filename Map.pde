@@ -1,5 +1,5 @@
 class Map extends ObserverSubject
-{  
+{
   int mode = CORNER;
   String emptyField = "D";
   String grass = "F";
@@ -19,7 +19,7 @@ class Map extends ObserverSubject
   }
 
   //! Sets the mode in which coordinates are specified, supported is CORNER, CENTER, CORNERS
-  void mode (int tmpMode) { 
+  void mode (int tmpMode) {
     mode=tmpMode;
   }
 
@@ -90,7 +90,7 @@ class Map extends ObserverSubject
   }
 
 
-  // Reference to a tile in the map  
+  // Reference to a tile in the map
   class TileReference {
     // Position in the map in tiles
     int x, y;
@@ -141,8 +141,7 @@ class Map extends ObserverSubject
       if (dX>0) {
         float nextX = (x+1)*tileSize;
         lambdaToNextX = (nextX-xPixel)/dX;
-      }   
-      else if (dX<0) {
+      } else if (dX<0) {
         float nextX = x*tileSize;
         lambdaToNextX = (nextX-xPixel)/dX;
       }
@@ -151,8 +150,7 @@ class Map extends ObserverSubject
       if (dY>0) {
         float nextY = (y+1)*tileSize;
         lambdaToNextY = (nextY-yPixel)/dY;
-      }   
-      else if (dY<0) {
+      } else if (dY<0) {
         float nextY = y*tileSize;
         lambdaToNextY = (nextY-yPixel)/dY;
       }
@@ -162,27 +160,25 @@ class Map extends ObserverSubject
         yPixel += dY*lambdaToNextX;
         if (dX>0) x++;
         else x--;
-      }
-      else if (lambdaToNextY<=lambdaToNextX && lambdaToNextY<1) { // Go y
+      } else if (lambdaToNextY<=lambdaToNextX && lambdaToNextY<1) { // Go y
         xPixel += dX*lambdaToNextY;
         yPixel += dY*lambdaToNextY;
         if (dY>0) y++;
         else y--;
-      }
-      else {// reached goal in same cell
+      } else {// reached goal in same cell
         xPixel = goalX;
         yPixel = goalY;
       }
     }
   };
-  
-    // Returns a reference to a given pixel and its tile
-    TileReference newRefOfPixel (float pixelX, float pixelY) {
-      TileReference ref = new TileReference (floor(pixelX/tileSize), floor(pixelY/tileSize));
-      ref.xPixel = pixelX;
-      ref.yPixel = pixelY;
-      return ref;
-    }
+
+  // Returns a reference to a given pixel and its tile
+  TileReference newRefOfPixel (float pixelX, float pixelY) {
+    TileReference ref = new TileReference (floor(pixelX/tileSize), floor(pixelY/tileSize));
+    ref.xPixel = pixelX;
+    ref.yPixel = pixelY;
+    return ref;
+  }
 
 
   // True if the rectangle given by x, y, w, h (partially) contains an element with a tile
@@ -196,10 +192,10 @@ class Map extends ObserverSubject
       w=w-x;
       h=h-y;
     }
-    int startX = floor(x / tileSize), 
-    startY = floor(y / tileSize), 
-    endX   = floor((x+w) / tileSize), 
-    endY   = floor((y+h) / tileSize);
+    int startX = floor(x / tileSize),
+      startY = floor(y / tileSize),
+      endX   = floor((x+w) / tileSize),
+      endY   = floor((y+h) / tileSize);
 
     for ( int xx = startX; xx <= endX; ++xx )
     {
@@ -223,10 +219,10 @@ class Map extends ObserverSubject
       w=w-x;
       h=h-y;
     }
-    int startX = floor(x / tileSize), 
-    startY = floor(y / tileSize), 
-    endX   = floor((x+w) / tileSize), 
-    endY   = floor((y+h) / tileSize);
+    int startX = floor(x / tileSize),
+      startY = floor(y / tileSize),
+      endX   = floor((x+w) / tileSize),
+      endY   = floor((y+h) / tileSize);
 
     for ( int xx = startX; xx <= endX; ++xx )
     {
@@ -250,10 +246,10 @@ class Map extends ObserverSubject
       h=h-y;
     }
     float centerX=x+w/2, centerY=y+h/2;
-    int startX = floor(x / tileSize), 
-    startY = floor(y / tileSize), 
-    endX   = floor((x+w) / tileSize), 
-    endY   = floor((y+h) / tileSize);
+    int startX = floor(x / tileSize),
+      startY = floor(y / tileSize),
+      endX   = floor((x+w) / tileSize),
+      endY   = floor((y+h) / tileSize);
 
     int xFound=-1, yFound=-1;
     float dFound = Float.POSITIVE_INFINITY;
@@ -287,10 +283,10 @@ class Map extends ObserverSubject
       h=h-y;
     }
     float centerX=x+w/2, centerY=y+h/2;
-    int startX = floor(x / tileSize), 
-    startY = floor(y / tileSize), 
-    endX   = floor((x+w) / tileSize), 
-    endY   = floor((y+h) / tileSize);
+    int startX = floor(x / tileSize),
+      startY = floor(y / tileSize),
+      endX   = floor((x+w) / tileSize),
+      endY   = floor((y+h) / tileSize);
 
     for ( int xx = startX; xx <= endX; ++xx ) {
       for ( int yy = startY; yy <= endY; ++yy ) {
@@ -310,7 +306,7 @@ class Map extends ObserverSubject
     while (ctr<=maxCtr && (ref.xPixel!=x2 || ref.yPixel!=y2)) {
       if (ctr>0) ref.advanceTowards (x2, y2);
       if (list.indexOf(at(ref.x, ref.y))!=-1) {
-        ref.setBorders (); 
+        ref.setBorders ();
         return ref;
       }
       ctr++;
@@ -329,8 +325,8 @@ class Map extends ObserverSubject
   void draw( float leftX, float topY ) {
     pushStyle();
     imageMode(CORNER);
-    int startX = floor(-leftX / tileSize), 
-    startY = floor(-topY / tileSize);
+    int startX = floor(-leftX / tileSize),
+      startY = floor(-topY / tileSize);
     for ( int y = startY; y < startY + height/tileSize + 2; ++y ) {
       for ( int x  = startX; x < startX + width/tileSize + 2; ++x ) {
         PImage img = null;
@@ -340,31 +336,31 @@ class Map extends ObserverSubject
         else if ('A'<=tile && tile<='Z')
           img = images[at( x, y ) - 'A'];
         if ( img != null )
-          image( img, 
-          x*tileSize + leftX, 
-          y*tileSize + topY, 
-          tileSize, tileSize );
+          image( img,
+            x*tileSize + leftX,
+            y*tileSize + topY,
+            tileSize, tileSize );
       }
     }
     popStyle();
-  } 
+  }
 
   // Loads a map file
   // element size is obtained from the first image loaded
   void loadFile( String mapFile ) {
     map = loadStrings( mapFile );
-    if (map==null) 
+    if (map==null)
       throw new Error ("Map "+mapFile+" not found.");
     while (map.length>0 && map[map.length-1].equals (""))
       map = shorten(map);
     h = map.length;
-    if ( h == 0 ) 
+    if ( h == 0 )
       throw new Error("Map has zero size");
     w = map[0].length();
 
     // Load images
-    for (char c='A'; c<='Z'; c++) 
-      images[c - 'A'] = loadImageRelativeToMap (mapFile, c + ".png" );        
+    for (char c='A'; c<='Z'; c++)
+      images[c - 'A'] = loadImageRelativeToMap (mapFile, c + ".png" );
     outsideImage = loadImageRelativeToMap (mapFile, "_.png");
 
     for ( int y = 0; y < h; ++y ) {
@@ -375,14 +371,12 @@ class Map extends ObserverSubject
       for ( int x = 0; x < line.length(); ++x ) {
         char c = line.charAt(x);
         if (c==' ' || c=='_') {
-        }
-        else if ('A'<=c && c<='Z') {
-          if (images[c - 'A'] == null) 
+        } else if ('A'<=c && c<='Z') {
+          if (images[c - 'A'] == null)
             throw new Error ("Image for "+c+".png missing");
-        }
-        else throw new Error("map must only contain A-Z, space or _");
+        } else throw new Error("map must only contain A-Z, space or _");
       }
-    }    
+    }
 
     determinetileSize ();
   }
@@ -391,7 +385,7 @@ class Map extends ObserverSubject
   void saveFile (String mapFile) {
     saveStrings (mapFile, map);
   }
-  
+
 
   //********************************************************************************************
   //********* The code below this line is just for internal use of the library *****************
@@ -403,8 +397,7 @@ class Map extends ObserverSubject
     if (createInput(imageFilename)!=null) {
       //println("Found");
       return loadImage (imageFilename);
-    }
-    else return null;
+    } else return null;
   }
 
   // Internal: Loads an image named imageName from a locatation relative
@@ -429,7 +422,7 @@ class Map extends ObserverSubject
     tileSize = 0;
     PImage[] allImages = (PImage[]) append (images, outsideImage);
     for (int i=0; i<allImages.length; i++) if (allImages[i]!=null) {
-      if (tileSize>0 && 
+      if (tileSize>0 &&
         (allImages[i].width!=tileSize || allImages[i].height!=tileSize))
         println ("WARNING: Images are not square and of same size");
       if (allImages[i].width>tileSize)  tileSize = allImages[i].width;
@@ -448,7 +441,7 @@ class Map extends ObserverSubject
     }
     if (w<width) w = width;
     for (int y=0; y<h; y++) {
-      while (map[y].length ()<w) 
+      while (map[y].length ()<w)
         map[y] = map[y] + "_";
     }
   }

@@ -12,21 +12,6 @@ class ObserverSubject {
     this.watchList.remove(observer);
   }
 
-
-  //void setPlantableUpdate(boolean plantable) {
-  //  this.plantable = plantable;
-  //  for (Observer observer : this.watchList ) {
-  //    observer.update(this.plantable);
-  //  }
-  //}
-
-  //void notifyObserver(Object data) {
-  //  for (Observer observer : this.watchList ) {
-  //    observer.update(data);
-  //    println(observer + "working for subject");
-  //  }
-  //}
-
   void notifyObservers(Object data) {
     for (Observer observer : this.watchList ) {
       observer.update(data);

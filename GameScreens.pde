@@ -5,6 +5,10 @@ class GameScreens {
   PImage startScreenLogo;
   PImage helpScreen;
   color greenBg = #d4dfb7;
+  
+  boolean scoreSaved = false;
+
+  JSONObject json;
 
   GameScreens() {
     startScreenLogo = loadImage("images/startscreen.png");
@@ -17,8 +21,13 @@ class GameScreens {
     image(startScreenLogo, 50, 50);
     pixelFont.draw("ENTER zum start", 50, height/2);
     pixelFont.draw("SPACE zur Anleitung", 50, height/2+32);
+    loadData();
     if (keyPressed) {
-      gameState = GAMERUNNING;
+      if ( key == ENTER || key == RETURN ) {
+        gameState = GAMERUNNING;
+      } else if (key == ' ') {
+        gameState = GAMEHELP;
+      }
     }
   }
 
@@ -29,19 +38,28 @@ class GameScreens {
   void gameRunningScreen() {
     player.updatePlayer();
     time+=1/frameRate;
-    drawBackground();
     drawMap();
 
     for ( Crops crop : cropList ) {
       crop.registerObserver(observerSubject);
       crop.draw();
     }
+    // display player
     player.drawPlayer();
+    // display menu
     ui.draw();
+
+    if ( keyPressed && (key == 'p' || key == 'P')) {
+      gameState = GAMEHELP;
+    }
 
     if ( player.actionCount >= 50 ) {
       // update for whether enough points are accumulated. Also I should probably clean this and use the notify
-      gameState = GAMEOVER;
+      if ((player.pointsAdded*2) <= 200) {
+        gameState = GAMEOVER;
+      } else {
+        gameState = GAMEWON;
+      }
     }
   }
 
@@ -74,19 +92,6 @@ class GameScreens {
     return factor*(x-xRef)+yRef;
   }
 
-  void drawBackground() {
-    // Explanation to the computation of x and y:
-    // If screenLeftX increases by 1, i.e. the main level moves 1 to the left on screen,
-    // we want the background map to move 0.5 to the left, i.e. x decrease by 0.5
-    // Further, imagine the center of the screen (width/2) corresponds to the center of the level
-    // (map.widthPixel), i.e. screenLeftX=map.widthPixel()/2-width/2. Then we want
-    // the center of the background image (backgroundImg.width/2) also correspond to the screen
-    // center (width/2), i.e. x=-backgroundImg.width/2+width/2.
-    float x = map (screenLeftX, map.widthPixel()/2-width/2, -backgroundImg.width/2+width/2, -0.5);
-    float y = map (screenTopY, map.heightPixel()/2-height/2, -backgroundImg.height/2+height/2, -0.5);
-    //image (backgroundImg, x, y);
-    background(255);
-  }
 
   void drawMap() {
     // The left border of the screen is at screenLeftX in map coordinates
@@ -96,44 +101,111 @@ class GameScreens {
   }
 
   void gameOverScreen() {
-    // replace later
-    background(255);
+    if (!scoreSaved) {
+      saveData();
+      scoreSaved = true;
+    }
+    background(greenBg);
     gameState = GAMEOVER;
-    ui.updateNotifyPoints(interactionHandler, player.pointsAdded);
-    pixelFont.draw(totalPoints(), 50, height/2-40);
+    pixelFont.draw("Leider hat Bob gewonnen...", 50, 77+16);
+    pixelFont.draw("Punkte:" + totalPoints(), 50, height/2-40);
     pixelFont.draw("zum Neustarten ", 50, height/2);
     pixelFont.draw("ENTER eingeben", 50, (height/2)+16);
+
     if (keyPressed && (key == ENTER || key == RETURN ) ) {
       gameState = GAMERESTART;
     }
   }
 
   void gameWonScreen() {
-    // replace later
-    background(255);
+    if (!scoreSaved) {
+      saveData();
+      scoreSaved = true;
+    }
+
+    background(greenBg);
     gameState = GAMEWON;
-    ui.updateNotifyPoints(interactionHandler, player.pointsAdded);
-    pixelFont.draw(totalPoints(), 50, height/2-40);
+    pixelFont.draw("Take that Bob!", 50, 77+16);
+    pixelFont.draw("Punkte:" + totalPoints(), 50, height/2-40);
     pixelFont.draw("zum Neustarten ", 50, height/2);
     pixelFont.draw("ENTER eingeben", 50, (height/2)+16);
+
     if (keyPressed && (key == ENTER || key == RETURN ) ) {
       gameState = GAMERESTART;
     }
   }
 
   String totalPoints() {
-    String pointsTotal = str(player.pointsAdded);
+    String pointsTotal = str(player.pointsAdded*2);
     return pointsTotal;
+  }
+
+  void saveData() {
+    if (!json.hasKey("High Score")) {
+      json.setJSONArray("High Score", new JSONArray());
+    }
+
+    JSONObject highScore = new JSONObject();
+    highScore.setInt("Punkte", player.pointsAdded*2);
+
+    JSONArray highScoreData = json.getJSONArray("High Score");
+    highScoreData.append(highScore);
+
+    saveJSONObject(json, "data/data.json");
+    loadData();
+    loadData();
+  }
+
+  void loadData() {
+    json = loadJSONObject("data/data.json");
+
+    if (json != null && json.hasKey("High Score")) {
+      JSONArray highScoreData = json.getJSONArray("High Score");
+
+      if (highScoreData.size()> 0) {
+        int highestScore = Integer.MIN_VALUE;
+
+        // grab highest score saved
+        for (int i = 0; i < highScoreData.size(); i++) {
+          JSONObject highScore = highScoreData.getJSONObject(i);
+          int scoreValue = highScore.getInt("Punkte");
+          highestScore = Math.max(highestScore, scoreValue);
+        }
+
+        // if score found:
+        String scoreStr = str(highestScore);
+        pixelFont.draw("High Score:" + scoreStr, 50, height/2+48);
+      }
+    }
   }
 
   void resetState() {
     cropList.clear();
+    scoreSaved = false;
     newGame();
     gameState = GAMEWAIT;
   }
 
   void helpScreen() {
     gameState = GAMEHELP;
+    background(greenBg);
     image(helpScreen, 0, 0);
+    pixelFont.draw("Bisher hatte Bob jedes Jahr die beste", 156, 92);
+    pixelFont.draw("Ernte. Doch dieses Jahr... komme ich!", 156, 92+20);
+    pixelFont.draw("Anleitung:", 40, 200);
+    pixelFont.draw("Du hast 50 Tage (Aktionen) Zeit", 214, 200);
+    pixelFont.draw("WASD zum Bewegen", 40, 268);
+    pixelFont.draw("Wasser: Q", 462, 268);
+    pixelFont.draw("H", 508, 308);
+    pixelFont.draw("Ernte:   X", 462, 312+20);
+    pixelFont.draw("Q", 508+24, 308);
+    pixelFont.draw("Auswahl mit Pfeiltasten", 40, 312);
+    pixelFont.draw("X zum pflanzen", 40, 312+20);
+    pixelFont.draw("13   25  8   5   25   6", 40, 378);
+    pixelFont.draw("0", 554, 378);
+    pixelFont.draw("Enter zum Fortfahren", 40, height-42);
+    if (keyPressed && (key == ENTER || key == RETURN )) {
+      gameState = GAMERUNNING;
+    }
   }
 }

@@ -247,7 +247,6 @@ class Player {
       (playerX, playerY, playerR*2, playerR*2, map.tilledWatered);
 
     if (keyPressed) {
-      println(key);
       // planting a seed
       if ( (key == 'x' || key == 'X') && soil != null ) {
 
@@ -285,7 +284,6 @@ class Player {
           // Check if there is a crop at this location
           for (Crops crop : cropList) {
             if (crop.cropX == map.centerXOfTile(x) && crop.cropY == map.centerYOfTile(y)) {
-              println("hydration level:" + crop.hydrationLevel );
               // Check the hydration level of the crop
               if (crop.hydrationLevel < 10) {
 
@@ -319,8 +317,6 @@ class Player {
         }
       }
     }
-    //println("crop selected:" + CROPSELECTION + "list total:" + cropSelection.size());
-
     // at the end we need to notify observer about changed seed for the display
     observerSubject.notifyCropSelection(CROPSELECTION);
     return CROPSELECTION;
@@ -329,7 +325,6 @@ class Player {
   void plantSeed(Map.TileReference soil) {
     switch(CROPSELECTION) {
     case 0:
-      // TODO: change to pumpkin once exists
       cropList.add(new Pumpkin(map.centerXOfTile(soil.x), map.centerYOfTile(soil.y)));
       break;
     case 1:
@@ -370,7 +365,6 @@ class Player {
           // reset field
           map.set (tile.x, tile.y, 'D');
           actionCount++;
-          println("removed" + tile.x + tile.y );
           break;
         case 3:
           // harvest
@@ -378,7 +372,7 @@ class Player {
 
           // reset field
           map.set (tile.x, tile.y, 'D');
-          println("harvested!" + tile.x + tile.y );
+
           actionCount++;
           // add to player point count
           pointsAdded += crop.cropPoints;

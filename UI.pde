@@ -50,6 +50,7 @@ class UI implements Observer {
   }
 
   void toolsDisplay() {
+    pixelFont.draw("P", width-86, 26);
     // key instruction for plant seeds
     pixelFont.draw("X", width-90, 164);
     // watering
@@ -105,7 +106,6 @@ class UI implements Observer {
   // step counter
   void updateActionCount(Observer observer, int actionCount) {
     String actionCountStr = str(actionCount);
-    // TODO: fix value, right now it's 50 steps max
     pixelFont.draw(actionCountStr + "/50", 30, 30);
   }
 
